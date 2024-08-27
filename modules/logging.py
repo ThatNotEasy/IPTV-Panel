@@ -2,21 +2,14 @@ import logging, json, datetime, requests
 import coloredlogs
 
 def setup_logging():
-    # Define the logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # Set the default logging level
+    logger.setLevel(logging.DEBUG)
 
-    # Define the format for the logs
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    # Create a console handler and set the level to debug
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
 
-    # Add the console handler to the logger
     logger.addHandler(console_handler)
-
-    # Apply coloredlogs configuration
     coloredlogs.install(
         level='DEBUG',
         fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -75,7 +68,7 @@ def log_user_ip(request):
     }
 
     try:
-        with open("visitor.log", "a") as file:
+        with open("logs/visitor.log", "a") as file:
             json.dump(log_entry, file, indent=4)
             file.write(',\n')
     except IOError:
