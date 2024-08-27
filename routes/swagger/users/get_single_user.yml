@@ -1,0 +1,88 @@
+summary: RETRIEVE A SINGLE USER BY ID
+tags:
+  - USER
+description: Retrieve the details of a single user based on their user ID.
+parameters:
+  - name: user_id
+    in: path
+    required: true
+    description: The ID of the user to retrieve.
+    schema:
+      type: string
+      example: '1'
+responses:
+  '200':
+    description: Successfully retrieved user details.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: User retrieved successfully.
+            responseData:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: '1'
+                username:
+                  type: string
+                  example: user1
+                email:
+                  type: string
+                  example: user1@example.com
+                role:
+                  type: string
+                  example: user
+  '400':
+    description: Bad request if user_id is missing or invalid.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Missing required field!
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '404':
+    description: User not found.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: User not found.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '500':
+    description: Internal server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error retrieving user

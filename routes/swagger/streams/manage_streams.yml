@@ -1,0 +1,59 @@
+summary: MANAGE STREAM
+description: Manage a stream by updating its details based on the provided `stream_id`.
+tags:
+  - STREAM
+parameters:
+  - name: stream_id
+    in: path
+    description: The ID of the stream to manage.
+    required: true
+    schema:
+      type: string
+requestBody:
+  description: Stream management data.
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          manifest_url:
+            type: string
+            description: URL for the stream's manifest.
+          kid_key:
+            type: string
+            description: Key ID for the stream.
+        required:
+          - manifest_url
+          - kid_key
+responses:
+  '200':
+    description: Stream managed successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              description: Response message indicating the result of the operation.
+  '400':
+    description: Bad Request - Missing required field or invalid input
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              description: Error message indicating missing required fields or invalid input.
+  '500':
+    description: Internal server error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message.

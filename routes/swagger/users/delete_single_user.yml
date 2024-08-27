@@ -1,0 +1,77 @@
+summary: DELETE A USER BY ID
+tags:
+  - USER
+description: Delete a user from the database based on their user ID.
+parameters:
+  - name: user_id
+    in: path
+    required: true
+    description: The ID of the user to delete.
+    schema:
+      type: string
+      example: '1'
+responses:
+  '200':
+    description: Successfully deleted the user.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: User deleted successfully.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '400':
+    description: Bad request if user_id is missing or invalid.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Missing required field or invalid user ID.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '404':
+    description: User not found.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: User not found.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '500':
+    description: Internal server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error deleting user

@@ -1,0 +1,77 @@
+summary: USER REGISTRATION
+description: Endpoint to register a new user. Requires JSON input with username, password, and email fields.
+tags:
+  - USER
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          username:
+            type: string
+            description: Username of the user
+            example: newuser
+          password:
+            type: string
+            description: Password for the user
+            example: securepassword
+          email:
+            type: string
+            description: Email address of the user
+            example: newuser@example.com
+        required:
+          - username
+          - password
+          - email
+responses:
+  '201':
+    description: User successfully created
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: User registered successfully.
+  '400':
+    description: Bad Request. Missing required fields or invalid data.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: missing required field!
+  '409':
+    description: Conflict. Username or password already exists.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Username or password already exists.
+  '500':
+    description: Internal Server Error. Unexpected error occurred.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: error message

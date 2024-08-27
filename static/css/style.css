@@ -1,0 +1,13 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding-top: 20px;
+}

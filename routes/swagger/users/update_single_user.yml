@@ -1,0 +1,96 @@
+summary: UPDATE USER DETAILS
+tags:
+  - USER
+description: Update user details based on user ID.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          user_id:
+            type: string
+            description: The ID of the user to update.
+            example: '12345'
+          username:
+            type: string
+            description: The new username for the user.
+            example: 'new_username'
+          password:
+            type: string
+            description: The new password for the user.
+            example: 'new_password'
+          email:
+            type: string
+            description: The new email address for the user.
+            example: 'new_email@example.com'
+          role:
+            type: string
+            description: The new role for the user.
+            example: 'admin'
+responses:
+  '200':
+    description: Successfully updated the user.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: User updated successfully.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '400':
+    description: Bad request if `user_id` is missing or invalid.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: User ID is required.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '404':
+    description: User not found.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: User not found.
+            responseData:
+              type: object
+              nullable: true
+              example: null
+  '500':
+    description: Internal server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error updating user

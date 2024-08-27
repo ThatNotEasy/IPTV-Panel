@@ -1,0 +1,8 @@
+# .gitignore
+__pycache__/
+venv
+.vscode
+.env
+config.ini
+database.db
+visitor.log

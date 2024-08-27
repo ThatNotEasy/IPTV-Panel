@@ -1,0 +1,54 @@
+summary: RETRIEVE ALL STREAMS
+description: Get a list of all streams.
+tags:
+  - STREAM
+responses:
+  '200':
+    description: A list of streams
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              ID:
+                type: integer
+                description: Unique identifier for the stream.
+              Name:
+                type: string
+                description: Name of the stream.
+              Server:
+                type: string
+                description: Server information.
+              HWAccel:
+                type: string
+                description: Hardware acceleration information.
+              Bitrate:
+                type: integer
+                description: Bitrate of the stream.
+              Quality:
+                type: integer
+                description: Quality of the stream.
+              FPS:
+                type: string
+                description: Frames per second.
+              Speed:
+                type: string
+                description: Speed information.
+              Connections:
+                type: integer
+                description: Number of connections.
+              Settings:
+                type: string
+                description: Additional settings for the stream.
+  '500':
+    description: Internal server error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message.

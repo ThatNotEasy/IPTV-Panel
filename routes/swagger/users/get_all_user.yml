@@ -1,0 +1,48 @@
+summary: RETRIEVE ALL USERS
+tags:
+  - USER
+description: Retrieve a list of all users from the database.
+responses:
+  '200':
+    description: Successfully retrieved all users.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Users retrieved successfully.
+            responseData:
+              type: array
+              items:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: '1'
+                  username:
+                    type: string
+                    example: user1
+                  email:
+                    type: string
+                    example: user1@example.com
+                  role:
+                    type: string
+                    example: user
+  '500':
+    description: Internal server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error retrieving users
