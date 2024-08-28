@@ -8,6 +8,12 @@ config = setup_config()
 log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
 
+class HELPER:
+    def __init__(self,):
+        self.uuid = None
+        self.username = None
+        self.password = None
+
 def get_external_ip():
     try:
         response = requests.get('https://ipv4.icanhazip.com')

@@ -5,15 +5,14 @@ from modules.logging import log_user_ip, setup_logging
 from modules.config import setup_config
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from routes.authorized import authorized_bp
 from routes.templates import templates_bp
 from routes.users import users_bp
 from routes.streams import streams_bp
 
-# Load configuration and set up logging
 config = setup_config()
 logger = setup_logging()
 
-# Configuration settings
 FLASK_DEBUG = config['DEFAULT']['FLASK_DEBUG']
 FLASK_RUN_HOST = config['DEFAULT']['FLASK_RUN_HOST']
 FLASK_RUN_PORT = config['DEFAULT']['FLASK_RUN_PORT']
@@ -69,6 +68,7 @@ swagger_config = {
 swagger = Swagger(app, config=swagger_config)
 app.register_blueprint(templates_bp, url_prefix='/')
 app.register_blueprint(users_bp, url_prefix='/users')
+app.register_blueprint(authorized_bp, url_prefix='/authorized')
 app.register_blueprint(streams_bp, url_prefix='/streams')
 
 @app.route('/')
@@ -77,12 +77,16 @@ def index():
     user_ip_data = log_user_ip(request)
     return render_template('index.html')
 
+# ==================================================================================================================================================== #
+
 @app.route('/api/')
 @cross_origin()
 def backend_api():
     user_ip_data = log_user_ip(request)
     response_data = {"message": "whut are you doin here?"}
     return jsonify({"responseData": response_data})
+
+# ==================================================================================================================================================== #
 
 @app.route('/dev/')
 @cross_origin()
@@ -91,12 +95,16 @@ def backend_dev():
     response_data = {"message": "whut are you doin here?"}
     return jsonify({"responseData": response_data})
 
+# ==================================================================================================================================================== #
+
 @app.route('/dev/docs')
 @cross_origin()
 def backend_doc():
     user_ip_data = log_user_ip(request)
     response_data = {"message": "whut are you doin here?"}
     return jsonify({"responseData": response_data})
+
+# ==================================================================================================================================================== #
 
 @app.route('/dev/docs/')
 @cross_origin()
@@ -105,16 +113,35 @@ def backend_docs():
     response_data = {"message": "whut are you doin here?"}
     return jsonify({"responseData": response_data})
 
+# ==================================================================================================================================================== #
+
 @app.route('/robots.txt')
 @cross_origin()
 def robots_txt():
     robots_txt_content = "User-agent: *\nDisallow: /private/"
     return Response(robots_txt_content, mimetype='text/plain')
 
-@app.errorhandler(404)
-@cross_origin()
-def page_not_found(e):
-    return render_template('404.html'), 404
+# ==================================================================================================================================================== #
+
+def handle_error(status_code, template_name):
+    @app.errorhandler(status_code)
+    @cross_origin()
+    def error_handler(e):
+        return render_template(template_name), status_code
+    return error_handler
+
+handle_error(400, '400.html')
+handle_error(401, '401.html')
+handle_error(403, '403.html')
+handle_error(404, '404.html')
+handle_error(405, '405.html')
+handle_error(408, '408.html')
+handle_error(500, '500.html')
+handle_error(502, '502.html')
+handle_error(503, '503.html')
+handle_error(504, '504.html')
+
+# ==================================================================================================================================================== #
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
