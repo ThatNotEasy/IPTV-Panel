@@ -11,9 +11,9 @@ import subprocess
 config = setup_config()
 ADMIN = config["ADMIN"]["PASSWORD"]
 
-full_uuid = 'full_uuid.json'
-statusip_json = 'statusip.json'
-json_file_path = 'secure_stat.json'
+FULL_UUID = ''
+IP_STATUS = ''
+JSON_FILE = ''
 
 authorized_bp = Blueprint('authorized_bp', __name__)
 CORS(authorized_bp)
@@ -32,7 +32,7 @@ def method_not_allowed(e):
 
 @authorized_bp.route('/securefile/<path:path>', methods=['GET', 'POST'])
 @cross_origin()
-@swag_from('swagger/authorized/securefile.yml')
+@swag_from('../swagger/authorized/securefile.yml')
 def serve_secure(path):
     uuid = request.args.get('uuid')
     referer = request.args.get('referer')
@@ -49,7 +49,7 @@ def serve_secure(path):
 
 @authorized_bp.route('/guardian', methods=['POST'])
 @cross_origin()
-@swag_from('swagger/authorized/guardian.yml')
+@swag_from('../swagger/authorized/guardian.yml')
 def guardian():
     if not request.is_json:
         return jsonify({'responseData': 'Missing required field'}), 400
@@ -73,7 +73,7 @@ def guardian():
 
 @authorized_bp.route('/check_shortlink', methods=['POST'])
 @cross_origin()
-@swag_from('swagger/authorized/check_shortlink.yml')
+@swag_from('../swagger/authorized/shortlink.yml')
 def check_shortlink():
     if not request.is_json:
         return jsonify({'message': 'Invalid request. Expected JSON format.'}), 400
@@ -117,10 +117,10 @@ def check_shortlink():
 
 @authorized_bp.route('/secure_uuid', methods=['GET', 'POST'])
 @cross_origin()
-@swag_from('swagger/authorized/secure_uuid.yml')
+@swag_from('../swagger/authorized/secure_uuid.yml')
 def secure_uuid():
     try:
-        with open(full_uuid, 'r') as file:
+        with open(FULL_UUID, 'r') as file:
             status_data = json.load(file)
     except FileNotFoundError:
         status_data = {'status': 'offline'}
@@ -134,7 +134,7 @@ def secure_uuid():
         status_data['status'] = 'online' if status_data['status'] == 'offline' else 'offline'
 
         try:
-            with open(full_uuid, 'w') as file:
+            with open(FULL_UUID, 'w') as file:
                 json.dump(status_data, file)
         except Exception as e:
             return jsonify({'message': 'Failed to update status', 'error': str(e)}), 500

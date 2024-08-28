@@ -14,7 +14,7 @@ CORS(users_bp)
 @users_bp.route('/register', methods=['POST'])
 @cross_origin()
 @jwt_required()
-@swag_from('swagger/users/signup.yml')
+@swag_from('../swagger/users/signup.yml')
 def user_signup():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -39,7 +39,7 @@ def user_signup():
 @users_bp.route('/login', methods=['POST'])
 @cross_origin()
 # @jwt_required()
-@swag_from('swagger/users/login.yml')
+@swag_from('../swagger/users/login.yml')
 def user_login():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -61,7 +61,7 @@ def user_login():
 @users_bp.route('/user_list', methods=['GET'])
 @cross_origin()
 @jwt_required()
-@swag_from('swagger/users/get_all_user.yml')
+@swag_from('../swagger/users/get_all_user.yml')
 def get_all_user():
     users = USERS()
     return users.get_all_users()
@@ -71,7 +71,7 @@ def get_all_user():
 @users_bp.route('/<user_id>', methods=['GET'])
 @cross_origin()
 @jwt_required()
-@swag_from('swagger/users/get_single_user.yml')
+@swag_from('../swagger/users/get_single_user.yml')
 def get_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -85,7 +85,7 @@ def get_single_user(user_id):
 @users_bp.route('/<user_id>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
-@swag_from('swagger/users/delete_single_user.yml')
+@swag_from('../swagger/users/delete_single_user.yml')
 def delete_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -99,7 +99,7 @@ def delete_single_user(user_id):
 @users_bp.route('/<user_id>', methods=['PUT'])
 @cross_origin()
 @jwt_required()
-@swag_from('swagger/users/update_single_user.yml')
+@swag_from('../swagger/users/update_single_user.yml')
 def update_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -126,25 +126,23 @@ def update_single_user(user_id):
 
 # ============================================================================================================================================ #
 
-@users_bp.route('/user/<user_id>', methods=['PUT'])
-@cross_origin()
-@jwt_required()
-def update_user_data(user_id):
-    uuid = request.args.get('uuid')
-    password = request.args.get('password')
+# @users_bp.route('/user/<user_id>', methods=['PUT'])
+# @cross_origin()
+# @jwt_required()
+# @swag_from('/swagger/users/update_single_user.yml')
+# def update_user_data(user_id):
+#     uuid = request.args.get('uuid')
+#     password = request.args.get('password')
 
-    # Validate inputs
-    if not uuid or not password:
-        return jsonify({'error': 'Both uuid and password are required.'}), 400
+#     if not uuid or not password:
+#         return jsonify({'error': 'Both uuid and password are required.'}), 400
 
-    # Check if the provided password is correct
-    if password != ADMIN_PASS:
-        return jsonify({'error': 'Incorrect password.'}), 400
+#     if password != ADMIN_PASS:
+#         return jsonify({'error': 'Incorrect password.'}), 400
 
-    # Fetch user data based on UUID
-    user_data = get_user_status(uuid)
+#     user_data = get_user_status(uuid)
 
-    if user_data:
-        return jsonify(user_data)
+#     if user_data:
+#         return jsonify(user_data)
     
-    return jsonify({'error': 'User not found.'}), 404
+#     return jsonify({'error': 'User not found.'}), 404

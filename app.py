@@ -123,23 +123,11 @@ def robots_txt():
 
 # ==================================================================================================================================================== #
 
-def handle_error(status_code, template_name):
-    @app.errorhandler(status_code)
-    @cross_origin()
-    def error_handler(e):
-        return render_template(template_name), status_code
-    return error_handler
 
-handle_error(400, '400.html')
-handle_error(401, '401.html')
-handle_error(403, '403.html')
-handle_error(404, '404.html')
-handle_error(405, '405.html')
-handle_error(408, '408.html')
-handle_error(500, '500.html')
-handle_error(502, '502.html')
-handle_error(503, '503.html')
-handle_error(504, '504.html')
+@app.errorhandler(404)
+@cross_origin()
+def error_handler(e):
+    return render_template('404.html'), 404
 
 # ==================================================================================================================================================== #
 

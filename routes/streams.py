@@ -9,14 +9,14 @@ CORS(streams_bp)
 
 @streams_bp.route('/get_streams', methods=['GET'])
 @cross_origin()
-@swag_from('swagger/streams/get_streams.yml')
+@swag_from('../swagger/streams/get_streams.yml')
 def stream():
     streams = STREAMS()
     return streams.get_streams()
 
 @streams_bp.route('/manage_streams/<stream_id>', methods=['POST'])
 @cross_origin()
-@swag_from('swagger/streams/manage_streams.yml')
+@swag_from('../swagger/streams/manage_streams.yml')
 def manage_stream(stream_id):
     if not stream_id:
         return jsonify({"responseData": "missing required field!"}), 400

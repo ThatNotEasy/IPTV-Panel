@@ -1,0 +1,42 @@
+summary: EXECUTE SCRIPT AFTER ADMIN PASSWORD VALIDATION
+description: EXECUTE A SCRIPT FROM A URL AFTER SUCCESSFUL ADMIN PASSWORD VALIDATION. RETURNS SCRIPT OUTPUT AS PLAIN TEXT.
+tags:
+ - AUTHORIZED
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          admin_password:
+            type: string
+            description: ADMIN PASSWORD REQUIRED FOR AUTHORIZATION.
+        required:
+          - admin_password
+responses:
+  '200':
+    description: SUCCESSFULLY EXECUTED SCRIPT AND RETURNED OUTPUT.
+    content:
+      text/plain:
+        schema:
+          type: string
+  '400':
+    description: MISSING REQUIRED FIELD IN REQUEST BODY.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: 'Missing required field'
+  '401':
+    description: UNAUTHORIZED DUE TO INVALID ADMIN PASSWORD.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: 'Unauthorized'

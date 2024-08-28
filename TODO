@@ -1,0 +1,33 @@
+## TODO
+
+### 1. Auto Banned Sniffer
+- **Objective**: Implement functionality to automatically detect and ban sniffers.
+- **Tasks**:
+  - Develop a mechanism to identify suspicious IP addresses or patterns indicative of sniffing.
+  - Integrate automated banning of identified sniffers into the system.
+  - Add logging for all detected and banned sniffers.
+  - Test the sniffer detection and banning process thoroughly.
+
+### 2. Auto Short Link Generator
+- **Objective**: Create an automated system for generating short links.
+- **Tasks**:
+  - Implement a service to generate short links based on user input or predefined criteria.
+  - Ensure that the short link generation process is integrated with the existing user management system.
+  - Develop API endpoints for creating and retrieving short links.
+  - Test the short link generation and retrieval processes for accuracy and performance.
+
+### 3. Generator (M3U & EPG)
+- **Objective**: Develop a generator for M3U playlists and EPG (Electronic Program Guide) data.
+- **Tasks**:
+  - Design and implement functionality to generate M3U playlists from provided data sources.
+  - Implement the generation of EPG data in compatible formats.
+  - Integrate M3U and EPG generation with the existing IPTV management system.
+  - Test the M3U and EPG generation features to ensure they meet the required specifications.
+
+### 4. Blocked Multi Login
+- **Objective**: Prevent multiple logins from the same user to enhance security.
+- **Tasks**:
+  - Develop a system to detect and block multiple concurrent logins from the same user account.
+  - Implement user notifications or alerts for detected multiple login attempts.
+  - Ensure the blocking mechanism does not affect legitimate use cases.
+  - Test the multi-login blocking feature for effectiveness and usability.

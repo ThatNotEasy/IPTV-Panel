@@ -19,6 +19,14 @@ Welcome to the IPTV Panel project! This is a web-based application designed to m
 - **Analytics & Reporting:** Track usage statistics and generate reports.
 - **Customizable UI:** Tailor the interface to fit your branding and preferences.
 
+### Endpoints
+
+- `/`: Serves the main index page.
+- `/api/`: Returns a simple JSON response for backend API requests.
+- `/dev/`: Returns a JSON response for development-related requests.
+- `/dev/docs/`: Provides access to OpenAPI documentation.
+- `/robots.txt`: Serves a `robots.txt` file for web crawlers.
+
 ### Coming Soon
 
 - **Live TV Streaming:** Integration with streaming services for live TV.
