@@ -8,6 +8,7 @@ from datetime import timedelta
 from routes.authorized import authorized_bp
 from routes.templates import templates_bp
 from routes.users import users_bp
+from routes.reseller import reseller_bp
 from routes.streams import streams_bp
 
 config = setup_config()
@@ -29,19 +30,22 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=12)
 jwt = JWTManager(app)
 CORS(app)
 
+prefix_url_api = '/dev'
+prefix_url_docs = f'{prefix_url_api}/docs'
+
 swagger_config = {
     "headers": [],
     "specs": [
         {
             "endpoint": "openapi",
-            "route": "/dev/openapi.json",
+            "route": f"{prefix_url_api}/openapi.json",
             "rule_filter": lambda rule: True,
             "model_filter": lambda tag: True,
         }
     ],
-    "static_url_path": "/dev/flasgger_static",
+    "static_url_path": f"{prefix_url_api}/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/dev/docs/",
+    "specs_route": f"{prefix_url_docs}/",
     "title": TITLE,
     "description": DESCRIPTION,
     "termsOfService": "/terms",
@@ -67,9 +71,10 @@ swagger_config = {
 
 swagger = Swagger(app, config=swagger_config)
 app.register_blueprint(templates_bp, url_prefix='/')
-app.register_blueprint(users_bp, url_prefix='/users')
-app.register_blueprint(authorized_bp, url_prefix='/authorized')
-app.register_blueprint(streams_bp, url_prefix='/streams')
+app.register_blueprint(users_bp, url_prefix=f'{prefix_url_api}/users')
+app.register_blueprint(reseller_bp, url_prefix=f'{prefix_url_api}/resellers')
+app.register_blueprint(authorized_bp, url_prefix=f'{prefix_url_api}/authorized')
+app.register_blueprint(streams_bp, uurl_prefix=f'{prefix_url_api}/streams')
 
 @app.route('/')
 @cross_origin()

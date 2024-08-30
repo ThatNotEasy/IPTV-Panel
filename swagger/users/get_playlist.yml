@@ -1,0 +1,49 @@
+summary: RETRIEVE PLAYLIST FILE
+description: SERVES THE PLAYLIST FILE (.M3U) FOR THE SPECIFIED USER ID.
+tags:
+ - USER
+parameters:
+  - name: user_id
+    in: path
+    description: USER ID FOR WHICH THE PLAYLIST IS RETRIEVED
+    required: true
+    schema:
+      type: string
+responses:
+  '200':
+    description: SUCCESSFUL RETRIEVAL OF PLAYLIST
+    content:
+      text/plain:
+        schema:
+          type: string
+          example: "#EXTM3U\n#EXTINF:-1,Channel 1\nhttp://example.com/channel1\n#EXTINF:-1,Channel 2\nhttp://example.com/channel2"
+  '400':
+    description: MISSING REQUIRED FIELD
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "missing required field!"
+  '404':
+    description: PLAYLIST NOT FOUND
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "Playlist not found"
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "Internal server error"

@@ -66,44 +66,44 @@ class USERS:
             
 # ============================================================================================================================================ #
 
-    def login(self):
+    def add_users(self):
         try:
             db = SQLITE()
+            user_uuid = str(uuid.uuid4()).replace("-", "")
             
-            # Query to get the password for the given username
-            result = db.query(
-                sql="SELECT password FROM users WHERE username = ?",
+            existing_user = db.query(
+                sql="SELECT * FROM users WHERE username = ?",
                 args=(self.username,)
             )
             
-            # Validate the password
-            if result and result[0]['password'] == self.password:
-                # Generate JWT token
-                token = jwt.encode({
-                    'username': self.username,
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-                }, 'IPTV', algorithm='HS256')
-                
-                response = {
-                    "status": "success",
-                    "message": "User logged in successfully.",
-                    "responseData": {
-                        "token": token
-                    }
-                }
-                return jsonify(response), 200
-            else:
+            if existing_user:
                 response = {
                     "status": "error",
-                    "message": "Invalid username or password.",
+                    "message": "Username already exists.",
                     "responseData": None
                 }
-                return jsonify(response), 401
+                return jsonify(response), 409
+            
+            db.execute(
+                sql="INSERT INTO users (user_id, username, password, role) VALUES (?, ?, ?, ?)",
+                args=(user_uuid, self.username, self.password, 'NORMAL USER')
+            )
+            db.commit()
+            
+            response = {
+                "status": "success",
+                "message": "User added successfully.",
+                "responseData": {
+                    "user_id": user_uuid,
+                    "username": self.username
+                }
+            }
+            return jsonify(response), 201
         
         except Exception as e:
             response = {
                 "status": "error",
-                "message": f"Error logging in user: {str(e)}",
+                "message": f"Error adding reseller: {str(e)}",
                 "responseData": None
             }
             return jsonify(response), 500
@@ -117,8 +117,7 @@ class USERS:
         try:
             db = SQLITE()
             
-            # Query to get all users
-            query = "SELECT * FROM users;"
+            query = "SELECT user_id, role, created_at FROM users;"
             result = db.query(sql=query)
             
             # Successful response
@@ -149,7 +148,7 @@ class USERS:
             db = SQLITE()
             
             # Query to get a single user by user_id
-            query = "SELECT * FROM users WHERE user_id = ?;"
+            query = "SELECT username, user_id, role, created_at FROM users WHERE user_id = ?;"
             result = db.query(sql=query, args=(self.user_id,))
             
             if not result:

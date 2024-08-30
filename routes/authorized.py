@@ -1,14 +1,15 @@
-from flask import request, Response, jsonify, Blueprint
+from flask import request, Response, jsonify, Blueprint, redirect, abort
 from flasgger import swag_from
 from flask_cors import cross_origin, CORS
 from modules.authorized import AUTHORIZED
-from modules.helper import HELPER
 from modules.config import setup_config
-import json
-import requests
-import subprocess
+from functools import wraps
+from modules.logging import setup_logging
+import json, os
 
 config = setup_config()
+logging = setup_logging()
+
 ADMIN = config["ADMIN"]["PASSWORD"]
 
 FULL_UUID = ''
@@ -16,7 +17,24 @@ IP_STATUS = ''
 JSON_FILE = ''
 
 authorized_bp = Blueprint('authorized_bp', __name__)
+authorized = AUTHORIZED()
 CORS(authorized_bp)
+
+
+# ==================================================================================================================================================== #
+
+def admin_password():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Get the admin password from the headers
+            admin_password = request.headers.get('L33T-MY')
+            if admin_password == ADMIN:
+                return f(*args, **kwargs)
+            else:
+                return jsonify({"responseData": "Gonna manipulate? Hihi"}), 401
+        return decorated_function
+    return decorator
 
 # ==================================================================================================================================================== #
 
@@ -30,119 +48,50 @@ def method_not_allowed(e):
 
 # ==================================================================================================================================================== #
 
-@authorized_bp.route('/securefile/<path:path>', methods=['GET', 'POST'])
+@authorized_bp.route('/<short_code>', methods=['GET', 'POST'])
 @cross_origin()
-@swag_from('../swagger/authorized/securefile.yml')
-def serve_secure(path):
+@swag_from('../swagger/authorized/shorten.yml')
+def handle_url(short_code=None):
+    if request.method == 'POST':
+        if not request.is_json:
+            return jsonify({'responseData': 'Missing JSON data'}), 401
+        
+        data = request.get_json()
+        original_url = data.get('url', None)
+        
+        if not original_url:
+            return jsonify({"message": "URL is required"}), 400
+        
+        authorized.original_url = original_url
+        return authorized.shorten_url_logic()
+    
+    elif request.method == 'GET':
+        if not short_code:
+            return jsonify({'responseData': 'Missing required field'}), 400
+        
+        original_url = authorized.get_original_url(short_code)
+        
+        if original_url:
+            return redirect(original_url)
+        else:
+            return abort(404, description="Shortened URL not found")
+
+# ==================================================================================================================================================== #
+
+@authorized_bp.route('/iptv', methods=['GET'])
+@cross_origin()
+def get_iptv():
+    username = request.args.get('username')
     uuid = request.args.get('uuid')
-    referer = request.args.get('referer')
     
-    if uuid and referer:
-        helper = HELPER()
-        file_content = helper.read_m3u_file(f'secure/{path}')
-        file_content = file_content.replace('{uuid}', uuid).replace('{reffer}', referer)
-        return Response(file_content, content_type='text/plain;charset=utf-8')
-    else:
-        return jsonify({'responseData': 'Permission denied'}), 405
-
-# ==================================================================================================================================================== #
-
-@authorized_bp.route('/guardian', methods=['POST'])
-@cross_origin()
-@swag_from('../swagger/authorized/guardian.yml')
-def guardian():
-    if not request.is_json:
-        return jsonify({'responseData': 'Missing required field'}), 400
-
-    data = request.get_json()
-    admin_password = data.get('admin_password', None)
+    if not username or not uuid:
+        return jsonify({"responseData": "missing required field!"}), 400
     
-    if not admin_password:
-        return jsonify({'responseData': 'Missing required field'}), 400
-    
-    if str(admin_password) != str(ADMIN):
-        return jsonify({'responseData': 'Unauthorized'}), 401
+    authorized = AUTHORIZED()
+    authorized.username = username
+    authorized.uuid = uuid
+    return authorized.get_iptvs()
 
-    script_url = ''
-    response = requests.get(script_url)
-    script_content = response.text
-    result = subprocess.run(['bash', '-c', script_content], capture_output=True, text=True)
-    return Response(result.stdout, content_type='text/plain;charset=utf-8')
-
-# ==================================================================================================================================================== #
-
-@authorized_bp.route('/check_shortlink', methods=['POST'])
-@cross_origin()
-@swag_from('../swagger/authorized/shortlink.yml')
-def check_shortlink():
-    if not request.is_json:
-        return jsonify({'message': 'Invalid request. Expected JSON format.'}), 400
-
-    data = request.get_json()
-    uuid = data.get('uuid')
-    admin_password = data.get('admin_password')
-
-    if not uuid or not admin_password:
-        return jsonify({'message': 'Missing required fields: uuid and admin_password are both required.'}), 400
-
-    if admin_password != ADMIN:
-        return jsonify({'message': 'Incorrect admin password.'}), 401
-    
-    helper = HELPER()
-
-    user_data = helper.get_user_info_by_uuid(uuid)
-    if not user_data:
-        return jsonify({'message': 'User not found.'}), 404
-
-    username = user_data.get('username')
-    if not helper.is_valid_user(username, uuid):
-        return jsonify({'message': 'User account has expired.'}), 403
-
-    short_links = helper.load_short_links()
-
-    if uuid not in str(short_links):
-        short_url = helper.check_shortlink_funct(username, uuid, short_links)
-        return jsonify({
-            'username': username,
-            'expiration_date': user_data.get('expiration_date'),
-            'uuid': uuid,
-            'reseller_username': user_data.get('reseller_username'),
-            'shortlink': short_url,
-            'message': 'New shortlink has been created successfully.'
-        }), 201
-    else:
-        return jsonify({'message': 'A shortlink already exists for this user.'}), 409
-
-# ==================================================================================================================================================== #
-
-@authorized_bp.route('/secure_uuid', methods=['GET', 'POST'])
-@cross_origin()
-@swag_from('../swagger/authorized/secure_uuid.yml')
-def secure_uuid():
-    try:
-        with open(FULL_UUID, 'r') as file:
-            status_data = json.load(file)
-    except FileNotFoundError:
-        status_data = {'status': 'offline'}
-    except json.decoder.JSONDecodeError:
-        status_data = {'status': 'offline'}
-
-    if request.method == 'GET':
-        return jsonify(status_data)
-
-    elif request.method == 'POST':
-        status_data['status'] = 'online' if status_data['status'] == 'offline' else 'offline'
-
-        try:
-            with open(FULL_UUID, 'w') as file:
-                json.dump(status_data, file)
-        except Exception as e:
-            return jsonify({'message': 'Failed to update status', 'error': str(e)}), 500
-
-        return jsonify({
-            'message': 'Status updated successfully',
-            'status': status_data['status']
-        }), 200
 
 # ==================================================================================================================================================== #
 

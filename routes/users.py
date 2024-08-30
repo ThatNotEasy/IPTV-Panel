@@ -3,6 +3,8 @@ from modules.users import USERS
 from modules.config import setup_config
 from flask import Blueprint, request, jsonify, render_template, url_for
 from flask_cors import cross_origin, CORS
+from routes.authorized import admin_password
+from modules.authorized import AUTHORIZED
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 config = setup_config()
@@ -11,36 +13,15 @@ ADMIN_PASS = config["ADMIN"]["PASSWORD"]
 users_bp = Blueprint('users_bp', __name__)
 CORS(users_bp)
 
-@users_bp.route('/register', methods=['POST'])
-@cross_origin()
-@jwt_required()
-@swag_from('../swagger/users/signup.yml')
-def user_signup():
-    if not request.is_json:
-        return jsonify({"responseData": "missing required field!"}), 400
-    
-    data = request.get_json()
-    username = data.get('username', None)
-    password = data.get('password', None)
-    email = data.get('email', None)
-    
-    if not username or not password or not email:
-        return jsonify({"responseData": "missing required field!"}), 400
-    
-    users = USERS()
-    users.username = username
-    users.password = password
-    users.email = email
-    return users.register()
-
 
 # ============================================================================================================================================ #
 
-@users_bp.route('/login', methods=['POST'])
+@users_bp.route('/add_user', methods=['POST'])
 @cross_origin()
-# @jwt_required()
-@swag_from('../swagger/users/login.yml')
-def user_login():
+@jwt_required()
+@admin_password()
+@swag_from('../swagger/users/add_user.yml')
+def add_user():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400
     
@@ -54,13 +35,14 @@ def user_login():
     users = USERS()
     users.username = username
     users.password = password
-    return users.login()
+    return users.add_users()
 
 # ============================================================================================================================================ #
 
 @users_bp.route('/user_list', methods=['GET'])
 @cross_origin()
 @jwt_required()
+@admin_password()
 @swag_from('../swagger/users/get_all_user.yml')
 def get_all_user():
     users = USERS()
@@ -71,6 +53,7 @@ def get_all_user():
 @users_bp.route('/<user_id>', methods=['GET'])
 @cross_origin()
 @jwt_required()
+@admin_password()
 @swag_from('../swagger/users/get_single_user.yml')
 def get_single_user(user_id):
     if not user_id:
@@ -85,6 +68,7 @@ def get_single_user(user_id):
 @users_bp.route('/<user_id>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
+@admin_password()
 @swag_from('../swagger/users/delete_single_user.yml')
 def delete_single_user(user_id):
     if not user_id:
@@ -99,6 +83,7 @@ def delete_single_user(user_id):
 @users_bp.route('/<user_id>', methods=['PUT'])
 @cross_origin()
 @jwt_required()
+@admin_password()
 @swag_from('../swagger/users/update_single_user.yml')
 def update_single_user(user_id):
     if not user_id:
@@ -126,23 +111,25 @@ def update_single_user(user_id):
 
 # ============================================================================================================================================ #
 
-# @users_bp.route('/user/<user_id>', methods=['PUT'])
-# @cross_origin()
-# @jwt_required()
-# @swag_from('/swagger/users/update_single_user.yml')
-# def update_user_data(user_id):
-#     uuid = request.args.get('uuid')
-#     password = request.args.get('password')
+@users_bp.route('/<user_id>/playlist', methods=['GET'])
+@cross_origin()
+@swag_from('../swagger/users/get_playlist.yml')
+def get_playlist(user_id):
+    if not user_id:
+        return jsonify({"responseData": "Missing required field!"}), 400
 
-#     if not uuid or not password:
-#         return jsonify({'error': 'Both uuid and password are required.'}), 400
-
-#     if password != ADMIN_PASS:
-#         return jsonify({'error': 'Incorrect password.'}), 400
-
-#     user_data = get_user_status(uuid)
-
-#     if user_data:
-#         return jsonify(user_data)
+    authorized = AUTHORIZED()
+    authorized.user_id = user_id
     
-#     return jsonify({'error': 'User not found.'}), 404
+    user_exists = authorized.check_user_id(user_id)
+    if not user_exists:
+        return jsonify({"responseData": "User ID not found!"}), 404
+
+    playlist_file_path = os.path.join("templates", "playlist.m3u")
+    if not os.path.isfile(playlist_file_path):
+        return abort(404, description="Playlist not found")
+
+    with open(playlist_file_path, 'r') as file:
+        playlist_content = file.read()
+
+    return Response(playlist_content, mimetype='text/plain')
