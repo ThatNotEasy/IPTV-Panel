@@ -1,0 +1,64 @@
+summary: DELETE A SINGLE RESELLER
+description: REMOVES A SPECIFIC RESELLER FROM THE SYSTEM USING THEIR ID.
+tags:
+  - RESELLER
+parameters:
+  - name: reseller_id
+    in: path
+    required: true
+    description: THE ID OF THE RESELLER TO DELETE.
+    schema:
+      type: string
+responses:
+  '200':
+    description: SUCCESSFUL DELETION OF THE RESELLER
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Reseller deleted successfully.
+  '400':
+    description: BAD REQUEST, MISSING RESELLER ID
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Missing required field
+  '404':
+    description: RESELLER NOT FOUND
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Reseller not found
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error deleting reseller

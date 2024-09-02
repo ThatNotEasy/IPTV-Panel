@@ -1,0 +1,45 @@
+summary: RETRIEVE ALL RESELLERS
+description: FETCHES A LIST OF ALL RESELLERS.
+tags:
+  - RESELLER
+responses:
+  '200':
+    description: SUCCESSFUL RESPONSE WITH LIST OF RESELLERS
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Resellers retrieved successfully.
+            responseData:
+              type: array
+              items:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: a9fd418f4d7e47d3a97b7e30a2e5c867
+                  username:
+                    type: string
+                    example: reseller_user
+                  email:
+                    type: string
+                    example: reseller@example.com
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error retrieving resellers

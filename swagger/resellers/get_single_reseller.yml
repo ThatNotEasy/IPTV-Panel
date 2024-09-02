@@ -1,0 +1,76 @@
+summary: RETRIEVE A SINGLE RESELLER
+description: FETCHES DETAILS OF A SPECIFIC RESELLER USING THEIR ID.
+tags:
+  - RESELLER
+parameters:
+  - name: reseller_id
+    in: path
+    required: true
+    description: THE ID OF THE RESELLER TO RETRIEVE.
+    schema:
+      type: string
+responses:
+  '200':
+    description: SUCCESSFUL RESPONSE WITH RESELLER DETAILS
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Reseller retrieved successfully.
+            responseData:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: a9fd418f4d7e47d3a97b7e30a2e5c867
+                username:
+                  type: string
+                  example: reseller_user
+                email:
+                  type: string
+                  example: reseller@example.com
+  '400':
+    description: BAD REQUEST, RESELLER ID IS MISSING OR INVALID
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Reseller ID is required
+  '404':
+    description: RESELLER NOT FOUND
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Reseller not found
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error retrieving reseller

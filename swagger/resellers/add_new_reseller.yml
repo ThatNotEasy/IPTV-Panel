@@ -1,0 +1,69 @@
+summary: ADD A NEW RESELLER
+description: CREATES A NEW RESELLER IN THE SYSTEM WITH THE PROVIDED USERNAME AND PASSWORD.
+tags:
+  - RESELLER
+requestBody:
+  description: The data required to create a new reseller.
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          username:
+            type: string
+            description: The username for the new reseller.
+            example: new_reseller
+          password:
+            type: string
+            description: The password for the new reseller.
+            example: securepassword123
+        required:
+          - username
+          - password
+responses:
+  '201':
+    description: SUCCESSFUL CREATION OF THE NEW RESELLER
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Reseller added successfully.
+            responseData:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: new_reseller
+  '400':
+    description: BAD REQUEST, MISSING REQUIRED FIELD
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Missing required field
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: Error adding reseller
