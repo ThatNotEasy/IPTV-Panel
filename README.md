@@ -32,3 +32,6 @@ Welcome to the IPTV Panel project! This is a web-based application designed to m
 - **Live TV Streaming:** Integration with streaming services for live TV.
 - **VOD Support:** Manage Video On Demand (VOD) content.
 - **Multi-language Support:** Offer multiple languages for user accessibility.
+
+## Author
+Developed and maintained by [ThatNotEasy](https://github.com/ThatNotEasy).
