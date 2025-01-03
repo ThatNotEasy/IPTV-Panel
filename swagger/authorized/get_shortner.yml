@@ -1,0 +1,42 @@
+summary: REDIRECT TO THE ORIGINAL URL
+description: REDIRECTS THE USER TO THE ORIGINAL URL BASED ON THE PROVIDED SHORT CODE.
+tags:
+  - AUTHORIZED
+parameters:
+  - name: short_code
+    in: path
+    description: THE SHORT CODE OF THE URL TO REDIRECT TO THE ORIGINAL URL.
+    required: true
+    schema:
+      type: string
+responses:
+  '200':
+    description: SUCCESSFULLY REDIRECTED TO THE ORIGINAL URL.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "Redirecting to the original URL"
+  '400':
+    description: MISSING REQUIRED FIELD OR BAD REQUEST.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "Missing required field"
+  '404':
+    description: SHORTENED URL NOT FOUND.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: "Shortened URL not found"

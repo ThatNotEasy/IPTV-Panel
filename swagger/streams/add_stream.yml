@@ -1,0 +1,88 @@
+summary: ADD A NEW STREAM
+description: Adds a new video stream to the database. Requires JSON input.
+tags:
+  - STREAM
+requestBody:
+  description: JSON object containing the details of the stream to be added.
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - manifest_url
+          - kid_key
+          - stream_name
+          - stream_thumbnail
+        properties:
+          manifest_url:
+            type: string
+            description: The URL of the video manifest file.
+            example: "http://example.com/manifest.mpd"
+          kid_key:
+            type: string
+            description: The encryption key for the stream.
+            example: "12345-abcde-67890-fghij"
+          stream_name:
+            type: string
+            description: The name of the stream.
+            example: "Example Stream"
+          stream_thumbnail:
+            type: string
+            description: The URL for the stream thumbnail.
+            example: "http://example.com/thumbnail.jpg"
+responses:
+  '201':
+    description: Stream added successfully.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Stream added successfully.
+            responseData:
+              type: object
+              properties:
+                stream_id:
+                  type: string
+                  example: "stream-12345"
+                manifest_url:
+                  type: string
+                  example: "http://example.com/manifest.mpd"
+                kid_key:
+                  type: string
+                  example: "12345-abcde-67890-fghij"
+                stream_name:
+                  type: string
+                  example: "Example Stream"
+                stream_thumbnail:
+                  type: string
+                  example: "http://example.com/thumbnail.jpg"
+  '400':
+    description: Missing required field or invalid input.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: missing required field!
+  '500':
+    description: Server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: An error occurred while adding the stream.

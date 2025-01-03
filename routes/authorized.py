@@ -1,7 +1,8 @@
-from flask import request, Response, jsonify, Blueprint, redirect, abort
+from flask import request, Response, jsonify, Blueprint, redirect, abort, url_for
 from flasgger import swag_from
 from flask_cors import cross_origin, CORS
 from modules.authorized import AUTHORIZED
+from modules.users import USERS
 from modules.config import setup_config
 from functools import wraps
 from modules.logging import setup_logging
@@ -48,50 +49,45 @@ def method_not_allowed(e):
 
 # ==================================================================================================================================================== #
 
-@authorized_bp.route('/<short_code>', methods=['GET', 'POST'])
+@authorized_bp.route('/<short_code>', methods=['GET'])
 @cross_origin()
-@swag_from('../swagger/authorized/shorten.yml')
-def handle_url(short_code=None):
-    if request.method == 'POST':
-        if not request.is_json:
-            return jsonify({'responseData': 'Missing JSON data'}), 401
+@swag_from('../swagger/authorized/get_shortner.yml')
+def handle_url(short_code):
+    user_agent = request.headers.get('User-Agent', '')
+    client_ip = request.remote_addr
+
+    logging.info(f"Client IP: {client_ip} | User-Agent: {user_agent}")
+
+    if not user_agent.startswith("OTT"):
+        return redirect(url_for('templates_bp.serve_pepes'))
+
+    if not short_code:
+        return redirect(url_for('templates_bp.serve_pepes'))
         
-        data = request.get_json()
-        original_url = data.get('url', None)
+    original_url = authorized.get_original_url(short_code)
         
-        if not original_url:
-            return jsonify({"message": "URL is required"}), 400
-        
-        authorized.original_url = original_url
-        return authorized.shorten_url_logic()
-    
-    elif request.method == 'GET':
-        if not short_code:
-            return jsonify({'responseData': 'Missing required field'}), 400
-        
-        original_url = authorized.get_original_url(short_code)
-        
-        if original_url:
-            return redirect(original_url)
-        else:
-            return abort(404, description="Shortened URL not found")
+    if original_url:
+        return redirect(original_url)
+    else:
+        return abort(404, description="Shortened URL not found")
 
 # ==================================================================================================================================================== #
 
-@authorized_bp.route('/iptv', methods=['GET'])
+@authorized_bp.route('/create_shortner', methods=['POST'])
 @cross_origin()
-def get_iptv():
-    username = request.args.get('username')
-    uuid = request.args.get('uuid')
+@swag_from('../swagger/authorized/create_shortner.yml')
+def create_shortner():
+    if not request.is_json:
+        return jsonify({'responseData': 'Missing JSON data'}), 401
     
-    if not username or not uuid:
-        return jsonify({"responseData": "missing required field!"}), 400
+    data = request.get_json()
+    original_url = data.get('url', None)
     
-    authorized = AUTHORIZED()
-    authorized.username = username
-    authorized.uuid = uuid
-    return authorized.get_iptvs()
-
+    if not original_url:
+        return jsonify({"message": "URL is required"}), 400
+    
+    authorized.original_url = original_url
+    return authorized.shorten_url_logic()
 
 # ==================================================================================================================================================== #
 

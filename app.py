@@ -10,6 +10,7 @@ from routes.templates import templates_bp
 from routes.users import users_bp
 from routes.reseller import reseller_bp
 from routes.streams import streams_bp
+from flask_compress import Compress
 
 config = setup_config()
 logger = setup_logging()
@@ -22,13 +23,17 @@ TITLE = config['DEFAULT']["TITLE"]
 DESCRIPTION = config['DEFAULT']["DESCRIPTION"]
 
 app = Flask(__name__)
+
 app.jinja_env.autoescape = True
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['JWT_SECRET_KEY'] = SECRET_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=12)
+app.config['COMPRESS_LEVEL'] = 6  # Compression level (1-9)
+app.config['COMPRESS_MIN_SIZE'] = 500  # Minimum size (in bytes) to compress
 
 jwt = JWTManager(app)
 CORS(app)
+Compress(app)
 
 prefix_url_api = '/dev'
 prefix_url_docs = f'{prefix_url_api}/docs'
@@ -74,7 +79,7 @@ app.register_blueprint(templates_bp, url_prefix='/')
 app.register_blueprint(users_bp, url_prefix=f'{prefix_url_api}/users')
 app.register_blueprint(reseller_bp, url_prefix=f'{prefix_url_api}/resellers')
 app.register_blueprint(authorized_bp, url_prefix=f'{prefix_url_api}/authorized')
-app.register_blueprint(streams_bp, uurl_prefix=f'{prefix_url_api}/streams')
+app.register_blueprint(streams_bp, url_prefix=f'{prefix_url_api}/streams')
 
 @app.route('/')
 @cross_origin()

@@ -8,36 +8,15 @@ import os
 os.makedirs("logs", exist_ok=True)
 
 def setup_logging():
-    """Sets up logging to display only debug-level messages with colored output."""
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG) 
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logs_folder = 'logs'
+    if not os.path.exists(logs_folder):
+        os.makedirs(logs_folder)
 
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-
-    # Colored logs configuration
-    coloredlogs.install(
-        level='DEBUG',
-        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level_styles={
-            'info': {'color': 'green'},
-            'debug': {'color': 'blue'},
-            'warning': {'color': 'yellow'},
-            'error': {'color': 'red'},
-            'critical': {'color': 'red', 'bold': True},
-        },
-        field_styles={
-            'asctime': {'color': 'cyan'},
-            'name': {'color': 'magenta'},
-            'levelname': {'color': 'white', 'bold': True},
-            'message': {'color': 'white'},
-        }
-    )
-
-    return logger
+    coloredlogs.install(level='DEBUG', fmt=log_format, humanize=True)
+    logging.basicConfig(level=logging.DEBUG, format=log_format, filename=os.path.join(logs_folder, 'log.log'))
+    return logging
 
 def log_user_ip(request):
     """Logs user IP information and details to a file."""

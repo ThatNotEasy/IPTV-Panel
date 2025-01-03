@@ -13,13 +13,8 @@ requestBody:
             type: string
             description: Username of the user
             example: testuser
-          password:
-            type: string
-            description: Password for the user
-            example: userpassword
         required:
           - username
-          - password
 responses:
   '200':
     description: User successfully authenticated

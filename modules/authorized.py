@@ -36,6 +36,17 @@ class AUTHORIZED:
     def get_original_url(self, short_code):
         return self.url_db.get(short_code, None)
     
+    def update_user_activity(self):
+        db = SQLITE()
+        try:
+            update_query = "UPDATE users SET ip_address = ?, device = ? WHERE user_id = ?;"
+            db.execute(sql=update_query, args=(self.ip_address, self.device, self.user_id))
+            db.commit()
+        except Exception as e:
+            print(f"Error logging user activity: {str(e)}")
+        finally:
+            db.close()
+    
 # ==================================================================================================================================================== #
 
 

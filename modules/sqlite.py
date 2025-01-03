@@ -58,7 +58,9 @@ class SQLITE:
                     role TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     login_date TIMESTAMP,
-                    last_login_date TIMESTAMP
+                    last_login_date TIMESTAMP,
+                    ip_address TEXT,
+                    device TEXT
                 )
             '''
         }

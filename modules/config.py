@@ -1,9 +1,6 @@
-from dotenv import load_dotenv
-import configparser
-
-load_dotenv('.env')
+from configparser import ConfigParser
 
 def setup_config():
-    config = configparser.ConfigParser()
+    config = ConfigParser()
     config.read('config.ini')
     return config

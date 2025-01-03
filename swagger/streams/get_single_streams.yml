@@ -1,0 +1,80 @@
+summary: GET A SINGLE STREAM
+description: Retrieve details of a specific video stream using its unique `stream_id`.
+tags:
+  - STREAM
+parameters:
+  - name: stream_id
+    in: path
+    required: true
+    description: The unique identifier of the stream to be retrieved.
+    schema:
+      type: string
+      example: "stream-12345"
+responses:
+  '200':
+    description: Details of the requested stream.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: success
+            message:
+              type: string
+              example: Stream retrieved successfully.
+            responseData:
+              type: object
+              properties:
+                stream_id:
+                  type: string
+                  example: "stream-12345"
+                manifest_url:
+                  type: string
+                  example: "http://example.com/manifest.mpd"
+                kid_key:
+                  type: string
+                  example: "12345-abcde-67890-fghij"
+                stream_name:
+                  type: string
+                  example: "Example Stream"
+                stream_thumbnail:
+                  type: string
+                  example: "http://example.com/thumbnail.jpg"
+  '400':
+    description: Missing `stream_id` in the request path.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            responseData:
+              type: string
+              example: missing required field!
+  '404':
+    description: Stream not found.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: No stream found with the provided stream_id.
+  '500':
+    description: Server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: error
+            message:
+              type: string
+              example: An error occurred while retrieving the stream.

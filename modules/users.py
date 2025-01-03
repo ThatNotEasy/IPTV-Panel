@@ -1,6 +1,10 @@
-import requests, uuid, jwt, datetime
+import requests, uuid, jwt, datetime, random, string
 from flask import jsonify
+from modules.logging import setup_logging
+from datetime import datetime, timedelta
 from modules.sqlite import SQLITE
+
+logging = setup_logging()
 
 class USERS:
     def __init__(self):
@@ -10,9 +14,20 @@ class USERS:
         self.email = None
         self.role = None
         self.max_connection = None
-        self.expired_date = None
+        self.expired_at = None
         self.package_id = None
         self.package_name = None
+        self.ip_address = None
+        self.device = None
+        self.active_sessions = {}
+        
+    def calculate_expiration(self):
+        now = datetime.now()
+        one_month_later = now + timedelta(days=30)
+        return one_month_later
+    
+    def generate_short_code(self, length=6):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
         
     def register(self):
         try:
@@ -33,32 +48,26 @@ class USERS:
                 }
                 return jsonify(response), 409
             
-            # Register the new user
             db.execute(
                 sql="INSERT INTO users (user_id, username, password, email, role) VALUES (?, ?, ?, ?, ?)",
                 args=(str(uuid.uuid4()).replace("-", ""), self.username, self.password, self.email, 'user')
             )
             db.commit()
             
-            # Successful registration response
             response = {
                 "status": "success",
                 "message": "User registered successfully.",
-                "responseData": {
-                    "username": self.username,
-                    "email": self.email
+                "username": self.username,
+                "email": self.email
                 }
-            }
-            return jsonify(response), 201
+            return jsonify({"responseData": response}), 201
         
         except Exception as e:
-            # Handle exceptions
             response = {
                 "status": "error",
-                "message": f"Error registering user: {str(e)}",
-                "responseData": None
+                "message": f"Error registering user: {str(e)}"
             }
-            return jsonify(response), 500
+            return jsonify({"responseData": response}), 500
         
         finally:
             # Ensure the database connection is closed
@@ -67,50 +76,32 @@ class USERS:
 # ============================================================================================================================================ #
 
     def add_users(self):
-        try:
-            db = SQLITE()
-            user_uuid = str(uuid.uuid4()).replace("-", "")
+        db = SQLITE()
+        self.user_id = str(uuid.uuid4()).replace("-", "")
             
-            existing_user = db.query(
-                sql="SELECT * FROM users WHERE username = ?",
-                args=(self.username,)
-            )
+        existing_user = db.query(sql="SELECT * FROM users WHERE username = ?", args=(self.username,))
+        if existing_user:
+            response = {"status": "error","message": "Username already exists."}
+            return jsonify({"responseData": response}), 409
             
-            if existing_user:
-                response = {
-                    "status": "error",
-                    "message": "Username already exists.",
-                    "responseData": None
-                }
-                return jsonify(response), 409
+        db.execute(sql="INSERT INTO users (user_id, username, role, expired_at) VALUES (?, ?, ?, ?)", args=(self.user_id, self.username, 'NORMAL USER', self.calculate_expiration()))
+        db.commit()
+        db.close()
             
-            db.execute(
-                sql="INSERT INTO users (user_id, username, password, role) VALUES (?, ?, ?, ?)",
-                args=(user_uuid, self.username, self.password, 'NORMAL USER')
-            )
-            db.commit()
+        playlist = f"http://127.0.0.1:1337/dev/users/{self.user_id}/playlist"
+        create_shortner_response = requests.post("http://127.0.0.1:1337/dev/authorized/create_shortner", json={"url": playlist})
             
-            response = {
-                "status": "success",
-                "message": "User added successfully.",
-                "responseData": {
-                    "user_id": user_uuid,
-                    "username": self.username,
-                    "iptv": f"https://127.0.0.1:1337/dev/users/{user_uuid}/playlist.m3u"
-                }
-            }
-            return jsonify(response), 201
-        
-        except Exception as e:
-            response = {
-                "status": "error",
-                "message": f"Error adding reseller: {str(e)}",
-                "responseData": None
-            }
-            return jsonify(response), 500
-        
-        finally:
-            db.close()
+        if create_shortner_response.status_code == 200:
+            create_shortner_data = create_shortner_response.json()["responseData"]
+            shortner = create_shortner_data["shorten"]
+                
+            response = {"status": "success", "message": "User added successfully.", "user_id": self.user_id, "username": self.username, "iptv": shortner}
+            return jsonify({"responseData": response}), 201
+        else:
+            response = {"status": "error", "message": f"Error from shortener service: {create_shortner_response.text}"}
+            return jsonify({"responseData": response}), create_shortner_response.status_code
+
+            
             
 # ============================================================================================================================================ #
 
@@ -285,7 +276,7 @@ class USERS:
             db = SQLITE()
             
             query = "SELECT user_id, username FROM users WHERE user_id = ?;"
-            result = db.query(sql=query, args=(self.uuid,))
+            result = db.query(sql=query, args=(self.user_id,))
             
             if not result:
                 response = {
@@ -318,11 +309,11 @@ class USERS:
             
 # ==================================================================================================================================================== #
 
-    def check_user_id(self, user_id):
+    def check_user_id(self):
         query = "SELECT 1 FROM users WHERE user_id = ? LIMIT 1;"
         db = SQLITE()
         try:
-            result = db.query(sql=query, args=(user_id,))
+            result = db.query(sql=query, args=(self.user_id,))
             return len(result) > 0
         except Exception as e:
             print(f"Error checking user_id: {str(e)}")
@@ -331,3 +322,49 @@ class USERS:
             db.close()
         
 # ==================================================================================================================================================== #
+
+    def update_user_activity(self):
+        if not self.ip_address or not self.device:
+            logging.warning(f"Attempt to update user activity for user {self.user_id} with empty IP or device.")
+            return {"status": "error", "message": "IP address and device cannot be empty."}
+        
+        query = """
+            UPDATE users
+            SET ip_address = ?, device = ?, last_login_date = ?, 
+                login_date = CASE WHEN login_date IS NULL OR login_date = '' THEN ? ELSE login_date END
+            WHERE user_id = ?;
+        """
+        current_time = datetime.utcnow()
+        try:
+            db = SQLITE()
+            db.execute(
+                sql=query,
+                args=(self.ip_address, self.device, current_time, current_time, self.user_id)
+            )
+            db.commit()
+            return {"status": "success", "message": "User activity updated successfully."}
+        except Exception as e:
+            logging.error(f"Error updating user activity for user {self.user_id}: {str(e)}")
+            return {"status": "error", "message": f"Error updating user: {str(e)}"}
+        finally:
+            db.close()
+
+# ==================================================================================================================================================== #
+
+    def get_active_session(self):
+        try:
+            query = "SELECT ip_address, device FROM users WHERE user_id = ?"
+            db = SQLITE()
+            result = db.query(sql=query, args=(self.user_id,))
+            if result and result[0]['ip_address'] and result[0]['device']:
+                return result[0]
+            else:
+                update = self.update_user_activity()
+                if update["status"] == "error":
+                    logging.warning(f"Failed to update user activity for user {self.user_id} while getting active session.")
+                return None
+        except Exception as e:
+            logging.error(f"Error fetching active session for user {self.user_id}: {str(e)}")
+            return None
+        finally:
+            db.close()
