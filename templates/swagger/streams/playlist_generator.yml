@@ -1,7 +1,7 @@
 summary: GENERATE IPTV PLAYLIST FORMAT
 description: Generates an OTT playlist based on provided channel information.
 tags:
-  - STREAMS
+  - GENERATOR
 requestBody:
   required: true
   content:
