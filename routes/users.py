@@ -28,7 +28,7 @@ CORS(users_bp)
 @cross_origin()
 # @jwt_required()
 # @admin_password()
-@swag_from('../swagger/users/add_user.yml')
+@swag_from('../templates/swagger/users/add_user.yml')
 def add_user():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -49,7 +49,7 @@ def add_user():
 @cross_origin()
 @jwt_required()
 @admin_password()
-@swag_from('../swagger/users/get_all_user.yml')
+@swag_from('../templates/swagger/users/get_all_user.yml')
 def get_all_user():
     users = USERS()
     return users.get_all_users()
@@ -60,7 +60,7 @@ def get_all_user():
 @cross_origin()
 @jwt_required()
 @admin_password()
-@swag_from('../swagger/users/get_single_user.yml')
+@swag_from('../templates/swagger/users/get_single_user.yml')
 def get_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -75,7 +75,7 @@ def get_single_user(user_id):
 @cross_origin()
 @jwt_required()
 @admin_password()
-@swag_from('../swagger/users/delete_single_user.yml')
+@swag_from('../templates/swagger/users/delete_single_user.yml')
 def delete_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -90,7 +90,7 @@ def delete_single_user(user_id):
 @cross_origin()
 @jwt_required()
 @admin_password()
-@swag_from('../swagger/users/update_single_user.yml')
+@swag_from('../templates/swagger/users/update_single_user.yml')
 def update_single_user(user_id):
     if not user_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -119,7 +119,7 @@ def update_single_user(user_id):
 
 @users_bp.route('/<user_id>/playlist', methods=['GET'])
 @cross_origin()
-@swag_from('../swagger/users/get_playlist.yml')
+@swag_from('../templates/swagger/users/get_playlist.yml')
 @rate_limit
 def get_playlist(user_id):
     # Log the initial request

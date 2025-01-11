@@ -10,6 +10,7 @@ from routes.templates import templates_bp
 from routes.users import users_bp
 from routes.reseller import reseller_bp
 from routes.streams import streams_bp
+from routes.access_control import access_control_bp
 from flask_compress import Compress
 
 config = setup_config()
@@ -22,7 +23,7 @@ SECRET_KEY = config['DEFAULT']['SECRET_KEY']
 TITLE = config['DEFAULT']["TITLE"]
 DESCRIPTION = config['DEFAULT']["DESCRIPTION"]
 
-app = Flask(__name__)
+app = Flask("+ IPTV PANEL + ", static_folder="../templates/swagger/static", static_url_path="/static")
 
 app.jinja_env.autoescape = True
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -77,6 +78,7 @@ swagger_config = {
 swagger = Swagger(app, config=swagger_config)
 app.register_blueprint(templates_bp, url_prefix='/')
 app.register_blueprint(users_bp, url_prefix=f'{prefix_url_api}/users')
+app.register_blueprint(access_control_bp, url_prefix=f'{prefix_url_api}/access_control')
 app.register_blueprint(reseller_bp, url_prefix=f'{prefix_url_api}/resellers')
 app.register_blueprint(authorized_bp, url_prefix=f'{prefix_url_api}/authorized')
 app.register_blueprint(streams_bp, url_prefix=f'{prefix_url_api}/streams')

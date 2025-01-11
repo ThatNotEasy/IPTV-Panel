@@ -47,3 +47,6 @@ responses:
             responseData:
               type: string
               example: "Internal server error"
+
+security:
+  - BearerAuth: []

@@ -1,0 +1,54 @@
+summary: GET BLACKLIST
+description: RETRIEVE THE CURRENT LIST OF BLACKLISTED IP ADDRESSES, USER AGENTS, OR OTHER ENTITIES.
+tags:
+  - ACCESS CONTROL
+responses:
+  '200':
+    description: BLACKLIST RETRIEVED SUCCESSFULLY
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            blacklist:
+              type: array
+              description: LIST OF BLACKLISTED ENTRIES
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: UNIQUE IDENTIFIER OF THE BLACKLIST ENTRY
+                  ip_address:
+                    type: string
+                    description: BLACKLISTED IP ADDRESS (IF APPLICABLE)
+                  user_agent:
+                    type: string
+                    description: BLACKLISTED USER AGENT STRING (IF APPLICABLE)
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: DATE AND TIME THE ENTRY WAS CREATED
+  '401':
+    description: UNAUTHORIZED ACCESS - INVALID OR MISSING JWT TOKEN
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Unauthorized
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: An unexpected error occurred.
+
+security:
+  - BearerAuth: []

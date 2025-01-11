@@ -1,37 +1,18 @@
-summary: UPDATE USER DETAILS
+summary: DELETE A USER BY ID
 tags:
   - USER
-description: Update user details based on user ID.
-requestBody:
-  required: true
-  content:
-    application/json:
-      schema:
-        type: object
-        properties:
-          user_id:
-            type: string
-            description: The ID of the user to update.
-            example: '12345'
-          username:
-            type: string
-            description: The new username for the user.
-            example: 'new_username'
-          password:
-            type: string
-            description: The new password for the user.
-            example: 'new_password'
-          email:
-            type: string
-            description: The new email address for the user.
-            example: 'new_email@example.com'
-          role:
-            type: string
-            description: The new role for the user.
-            example: 'admin'
+description: Delete a user from the database based on their user ID.
+parameters:
+  - name: user_id
+    in: path
+    required: true
+    description: The ID of the user to delete.
+    schema:
+      type: string
+      example: '1'
 responses:
   '200':
-    description: Successfully updated the user.
+    description: Successfully deleted the user.
     content:
       application/json:
         schema:
@@ -42,13 +23,13 @@ responses:
               example: success
             message:
               type: string
-              example: User updated successfully.
+              example: User deleted successfully.
             responseData:
               type: object
               nullable: true
               example: null
   '400':
-    description: Bad request if `user_id` is missing or invalid.
+    description: Bad request if user_id is missing or invalid.
     content:
       application/json:
         schema:
@@ -59,7 +40,7 @@ responses:
               example: error
             message:
               type: string
-              example: User ID is required.
+              example: Missing required field or invalid user ID.
             responseData:
               type: object
               nullable: true
@@ -93,4 +74,7 @@ responses:
               example: error
             message:
               type: string
-              example: Error updating user
+              example: Error deleting user
+
+security:
+  - BearerAuth: []

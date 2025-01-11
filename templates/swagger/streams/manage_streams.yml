@@ -57,3 +57,6 @@ responses:
             error:
               type: string
               description: Error message.
+
+security:
+  - BearerAuth: []

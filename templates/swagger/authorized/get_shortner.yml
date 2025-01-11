@@ -40,3 +40,6 @@ responses:
             responseData:
               type: string
               example: "Shortened URL not found"
+
+security:
+  - BearerAuth: []

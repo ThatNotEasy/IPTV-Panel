@@ -1,0 +1,87 @@
+summary: ADD TO BLACKLIST
+description: ADD A NEW ENTRY TO THE BLACKLIST INCLUDING IP ADDRESS, ASN, AND USER AGENT.
+tags:
+  - ACCESS CONTROL
+requestBody:
+  description: REQUIRED FIELDS FOR ADDING AN ENTRY TO THE BLACKLIST
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - ip_address
+          - asn_address
+          - user_agent
+        properties:
+          ip_address:
+            type: string
+            description: IP ADDRESS TO BE BLACKLISTED
+            example: "192.168.1.1"
+          asn_address:
+            type: string
+            description: ASN ASSOCIATED WITH THE ENTITY TO BE BLACKLISTED
+            example: "AS12345"
+          user_agent:
+            type: string
+            description: USER AGENT TO BE BLACKLISTED
+            example: "Mozilla/5.0"
+responses:
+  '200':
+    description: ENTRY ADDED TO BLACKLIST SUCCESSFULLY
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Blacklist entry added successfully.
+            data:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: UNIQUE IDENTIFIER OF THE ADDED BLACKLIST ENTRY
+                ip_address:
+                  type: string
+                  description: IP ADDRESS THAT WAS BLACKLISTED
+                asn_address:
+                  type: string
+                  description: ASN THAT WAS BLACKLISTED
+                user_agent:
+                  type: string
+                  description: USER AGENT THAT WAS BLACKLISTED
+  '400':
+    description: BAD REQUEST - MISSING REQUIRED FIELDS
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: missing required field!
+  '401':
+    description: UNAUTHORIZED ACCESS - INVALID OR MISSING JWT TOKEN
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Unauthorized
+  '500':
+    description: INTERNAL SERVER ERROR
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: An unexpected error occurred.
+
+security:
+  - BearerAuth: []

@@ -19,3 +19,15 @@ def serve_pepes():
         del response.headers['Content-Disposition']
     response.status_code = 301
     return response
+
+@templates_bp.route('/', methods=['GET'])
+@cross_origin()
+def home():
+    sections = [
+        {"name": "Access Control", "description": "Manage blacklist and access control settings.", "emoji": "🔒"},
+        {"name": "Authorized", "description": "View and manage authorized clients.", "emoji": "✅"},
+        {"name": "Reseller", "description": "Manage reseller accounts and privileges.", "emoji": "🛍️"},
+        {"name": "Stream", "description": "Monitor and manage active streams.", "emoji": "📡"},
+        {"name": "User", "description": "View and manage user accounts.", "emoji": "👤"},
+    ]
+    return render_template("home.html", sections=sections)

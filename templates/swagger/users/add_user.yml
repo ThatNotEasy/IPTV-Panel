@@ -69,3 +69,6 @@ responses:
             message:
               type: string
               example: Error logging in user
+
+security:
+  - BearerAuth: []

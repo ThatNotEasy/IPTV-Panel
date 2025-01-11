@@ -60,3 +60,6 @@ responses:
               type: string
               description: AN INTERNAL SERVER ERROR OCCURRED.
               example: "AN ERROR OCCURRED WHILE PROCESSING YOUR REQUEST."
+
+security:
+  - BearerAuth: []

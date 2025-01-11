@@ -14,7 +14,7 @@ CORS(reseller_bp)
 @reseller_bp.route('/reseller_list', methods=['GET'])
 @cross_origin()
 @jwt_required()
-@swag_from('../swagger/resellers/get_all_reseller.yml')
+@swag_from('../templates/swagger/resellers/get_all_reseller.yml')
 def get_all_reseller():
     reseller = RESELLER()
     return reseller.get_all_resellers()
@@ -24,7 +24,7 @@ def get_all_reseller():
 @reseller_bp.route('/<reseller_id>', methods=['GET'])
 @cross_origin()
 @jwt_required()
-@swag_from('../swagger/resellers/get_single_reseller.yml')
+@swag_from('../templates/swagger/resellers/get_single_reseller.yml')
 def get_single_reseller(reseller_id):
     if not reseller_id:
         return jsonify({"status": "error", "message": "Reseller ID is required"}), 400
@@ -38,7 +38,7 @@ def get_single_reseller(reseller_id):
 @reseller_bp.route('/<reseller_id>', methods=['DELETE'])
 @cross_origin()
 @jwt_required()
-@swag_from('../swagger/resellers/delete_single_reseller.yml')
+@swag_from('../templates/swagger/resellers/delete_single_reseller.yml')
 def delete_single_user(reseller_id):
     if not reseller_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -52,7 +52,7 @@ def delete_single_user(reseller_id):
 @reseller_bp.route('/add_reseller', methods=['POST'])
 @cross_origin()
 @jwt_required()
-@swag_from('../swagger/resellers/add_new_reseller.yml')
+@swag_from('../templates/swagger/resellers/add_new_reseller.yml')
 def add_new_reseller():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400

@@ -67,3 +67,6 @@ responses:
             message:
               type: string
               example: Error adding reseller
+
+security:
+  - BearerAuth: []

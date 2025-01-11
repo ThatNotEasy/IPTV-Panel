@@ -1,10 +1,10 @@
-summary: RETRIEVE ALL USERS
+summary: RETRIEVE ALL RESELLERS
+description: FETCHES A LIST OF ALL RESELLERS.
 tags:
-  - USER
-description: Retrieve a list of all users from the database.
+  - RESELLER
 responses:
   '200':
-    description: Successfully retrieved all users.
+    description: SUCCESSFUL RESPONSE WITH LIST OF RESELLERS
     content:
       application/json:
         schema:
@@ -15,7 +15,7 @@ responses:
               example: success
             message:
               type: string
-              example: Users retrieved successfully.
+              example: Resellers retrieved successfully.
             responseData:
               type: array
               items:
@@ -23,18 +23,15 @@ responses:
                 properties:
                   user_id:
                     type: string
-                    example: '1'
+                    example: a9fd418f4d7e47d3a97b7e30a2e5c867
                   username:
                     type: string
-                    example: user1
+                    example: reseller_user
                   email:
                     type: string
-                    example: user1@example.com
-                  role:
-                    type: string
-                    example: user
+                    example: reseller@example.com
   '500':
-    description: Internal server error.
+    description: INTERNAL SERVER ERROR
     content:
       application/json:
         schema:
@@ -45,4 +42,7 @@ responses:
               example: error
             message:
               type: string
-              example: Error retrieving users
+              example: Error retrieving resellers
+
+security:
+  - BearerAuth: []

@@ -28,7 +28,6 @@ def admin_password():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # Get the admin password from the headers
             admin_password = request.headers.get('L33T-MY')
             if admin_password == ADMIN:
                 return f(*args, **kwargs)
@@ -51,7 +50,7 @@ def method_not_allowed(e):
 
 @authorized_bp.route('/<short_code>', methods=['GET'])
 @cross_origin()
-@swag_from('../swagger/authorized/get_shortner.yml')
+@swag_from('../templates/swagger/authorized/get_shortner.yml')
 def handle_url(short_code):
     user_agent = request.headers.get('User-Agent', '')
     client_ip = request.remote_addr
@@ -75,7 +74,7 @@ def handle_url(short_code):
 
 @authorized_bp.route('/create_shortner', methods=['POST'])
 @cross_origin()
-@swag_from('../swagger/authorized/create_shortner.yml')
+@swag_from('../templates/swagger/authorized/create_shortner.yml')
 def create_shortner():
     if not request.is_json:
         return jsonify({'responseData': 'Missing JSON data'}), 401

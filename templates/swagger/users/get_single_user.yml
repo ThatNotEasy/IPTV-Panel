@@ -86,3 +86,6 @@ responses:
             message:
               type: string
               example: Error retrieving user
+
+security:
+  - BearerAuth: []

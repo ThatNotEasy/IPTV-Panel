@@ -11,7 +11,7 @@ CORS(streams_bp)
 
 @streams_bp.route('/get_streams', methods=['GET'])
 @cross_origin()
-@swag_from('../swagger/streams/get_streams.yml')
+@swag_from('../templates/swagger/streams/get_streams.yml')
 def stream():
     streams = STREAMS()
     return streams.get_all_streams()
@@ -20,7 +20,7 @@ def stream():
 
 @streams_bp.route('/<stream_id>', methods=['GET'])
 @cross_origin()
-@swag_from('../swagger/streams/get_single_streams.yml')
+@swag_from('../templates/swagger/streams/get_single_streams.yml')
 def get_single_stream(stream_id):
     if not stream_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -33,7 +33,7 @@ def get_single_stream(stream_id):
 
 @streams_bp.route('/<stream_id>', methods=['PUT'])
 @cross_origin()
-@swag_from('../swagger/streams/manage_streams.yml')
+@swag_from('../templates/swagger/streams/manage_streams.yml')
 def manage_stream(stream_id):
     if not stream_id:
         return jsonify({"responseData": "missing required field!"}), 400
@@ -54,7 +54,7 @@ def manage_stream(stream_id):
 
 @streams_bp.route('/add_stream', methods=['POST'])
 @cross_origin()
-@swag_from('../swagger/streams/add_stream.yml')
+@swag_from('../templates/swagger/streams/add_stream.yml')
 def add_stream():
     if not request.is_json:
         return jsonify({"responseData": "missing required field!"}), 400
