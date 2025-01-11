@@ -12,7 +12,7 @@ CORS(streams_bp)
 @streams_bp.route('/playlist_generator', methods=['POST'])
 @cross_origin()
 @jwt_required()
-@swag_from('../templates/swagger/iptv/playlist_generator.yml')
+@swag_from('../templates/swagger/streams/playlist_generator.yml')
 def playlist():
     if not request.is_json:
         return jsonify({"error": "Missing JSON in the request"}), 400
@@ -81,7 +81,7 @@ def download_playlist():
 @streams_bp.route('/epg_generator', methods=['POST'])
 @cross_origin()
 @jwt_required()
-@swag_from('../templates/swagger/iptv/generate_epg.yml')
+@swag_from('../templates/swagger/streams/generate_epg.yml')
 def generate_epg_api():
     data = request.json
 
