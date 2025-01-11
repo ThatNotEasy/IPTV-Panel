@@ -1,0 +1,81 @@
+summary: GENERATE IPTV PLAYLIST FORMAT
+description: Generates an OTT playlist based on provided channel information.
+tags:
+  - STREAMS
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of the channel.
+          thumbnailUrl:
+            type: string
+            description: URL of the channel thumbnail.
+          mpdUrl:
+            type: string
+            description: URL of the MPD file for the channel.
+          groupName:
+            type: string
+            description: Group to which the channel belongs.
+          playlistFormatter:
+            type: string
+            description: Format of the playlist (e.g., "1" or "2").
+          kid:
+            type: string
+            description: KeyID.
+          key:
+            type: string
+            description: Key.
+          genreType:
+            type: string
+            description: Type of genre (if applicable).
+          referer:
+            type: string
+            description: Referer URL.
+        required:
+          - name
+          - thumbnailUrl
+          - mpdUrl
+          - groupName
+          - playlistFormatter
+          - kid
+          - key
+          - referer
+responses:
+  '200':
+    description: Playlist generated successfully.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            playlist_content:
+              type: string
+              description: Content of the generated playlist.
+  '400':
+    description: Bad request. Missing JSON or required parameters.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message explaining the issue.
+  '500':
+    description: Internal server error.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message explaining the issue.
+
+security:
+ - Bearer: []

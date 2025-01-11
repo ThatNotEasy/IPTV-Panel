@@ -1,0 +1,81 @@
+summary: GENERATE EPG XML
+description: Generates an XMLTV EPG file based on the provided channels and programs data.
+tags:
+  - STREAMS
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          channels:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The unique identifier for the channel.
+                name:
+                  type: string
+                  description: The display name of the channel.
+          programs:
+            type: array
+            items:
+              type: object
+              properties:
+                channel:
+                  type: string
+                  description: The ID of the channel this program belongs to.
+                start:
+                  type: string
+                  format: date-time
+                  description: Start time of the program in the format YYYYMMDDHHMMSS.
+                end:
+                  type: string
+                  format: date-time
+                  description: End time of the program in the format YYYYMMDDHHMMSS.
+                title:
+                  type: string
+                  description: Title of the program.
+                desc:
+                  type: string
+                  description: Description of the program.
+responses:
+  '200':
+    description: Successful response with the EPG XML file for download.
+    content:
+      application/xml:
+        schema:
+          type: string
+          format: binary
+    headers:
+      Content-Disposition:
+        description: Header indicating that the response is an attachment and should be downloaded.
+        schema:
+          type: string
+          example: attachment; filename="epg.xml"
+  '400':
+    description: Bad request if the channels or programs data is missing or invalid.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message explaining what went wrong.
+  '500':
+    description: Internal server error if the file generation fails.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error message explaining the failure.
+
+security:
+ - Bearer: []
