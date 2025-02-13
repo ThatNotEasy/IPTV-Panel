@@ -1,7 +1,7 @@
 summary: GENERATE EPG XML
 description: Generates an XMLTV EPG file based on the provided channels and programs data.
 tags:
-  - STREAMS
+  - GENERATOR
 requestBody:
   required: true
   content:
