@@ -132,12 +132,10 @@ def get_playlist(user_id):
     if client_ip and ',' in client_ip:
         client_ip = client_ip.split(',')[0].strip()
 
-    # Check for blacklisted IP
     if client_ip in BLACKLISTED_IPS:
         logging.warning(f"Blocked access attempt from blacklisted IP: {client_ip}")
         return abort(403, description="Forbidden Ke? Kesian"), 403
 
-    # Country Check
     country_code = geoip_lookup(client_ip)
     if country_code not in COUNTRY_CODE:
         logging.warning(f"Access denied for IP {client_ip}: Country {country_code} is not allowed.")
@@ -151,22 +149,18 @@ def get_playlist(user_id):
         )
         return jsonify({'message': 'Access denied: Only Malaysian and Spanish IPs are allowed.'}), 403
 
-    # Manage IP lists
     manage_ip_lists(client_ip)
     logging.info(f"User Access: User ID: {user_id} | Client IP: {client_ip} | User-Agent: {user_agent} | Encoding: {encoding}")
 
-    # Check for sniffing
     if detect_sniffing(user_agent, client_ip):
         manage_ip_lists(client_ip, suspicious=True)
         logging.warning(f"Blocking suspicious request from {client_ip} with User-Agent: {user_agent}")
         return redirect(url_for('templates_bp.serve_pepes')), 301
 
-    # User-Agent validation
-    if not (user_agent.startswith("OTT") or user_agent.startswith("axios/1.6.2")):
+    if not (user_agent.startswith("OTT Player") or user_agent.startswith("axios/1.6.2") or user_agent.startswith("OTT Navigator")):
         logging.info(f"Invalid User-Agent for user {user_id} from {client_ip}: {user_agent}")
         return redirect(url_for('templates_bp.serve_pepes')), 301
 
-    # Check for missing user_id
     if not user_id:
         logging.error(f"Missing user_id in request from {client_ip}")
         return jsonify({"responseData": "Cari apa?"}), 400
@@ -176,7 +170,6 @@ def get_playlist(user_id):
     users.ip_address = client_ip
     users.device = user_agent
 
-    # Validate user ID
     if not users.check_user_id():
         logging.warning(f"User ID {user_id} not found for request from {client_ip}")
         return jsonify({"responseData": "Abuse eh?"}), 404
@@ -190,13 +183,11 @@ def get_playlist(user_id):
             return jsonify({"responseData": update_result}), 500
         active_session = users.get_active_session()
 
-    # Ensure active_session is not None before accessing it
     if active_session and (active_session['ip_address'] != client_ip or active_session['device'] != user_agent):
         logging.warning(f"Multiple login attempt detected for user {user_id} from {client_ip}. "
                         f"Active session IP: {active_session['ip_address']}, Device: {active_session['device']}")
         return jsonify({"responseData": "Multiple login attempts detected!"}), 403
 
-    # Serve the playlist
     playlist_file_path = os.path.join("templates", "playlist.m3u")
     if not os.path.isfile(playlist_file_path):
         logging.error(f"Playlist file not found for user {user_id} from {client_ip}")
