@@ -3,8 +3,13 @@ from flask import Blueprint, request, jsonify, render_template, url_for, send_fr
 from flask_cors import cross_origin, CORS
 from flask_jwt_extended import jwt_required
 
-templates_bp = Blueprint('templates_bp', __name__)
+templates_bp = Blueprint('templates_bp', __name__, template_folder="templates", static_folder="templates/static", static_url_path="/static")
 CORS(templates_bp)
+
+@templates_bp.route('/', methods=['GET'])
+@cross_origin()
+def index():
+    return render_template('index.html')
 
 @templates_bp.route('/stream', methods=['GET'])
 @cross_origin()

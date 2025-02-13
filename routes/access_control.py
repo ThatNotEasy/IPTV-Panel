@@ -9,7 +9,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 config = setup_config()
 ADMIN_PASS = config["ADMIN"]["PASSWORD"]
 
-access_control_bp = Blueprint('access_control_bp', __name__)
+access_control_bp = Blueprint('access_control_bp', __name__, template_folder="templates", static_folder="templates/static", static_url_path="/static")
 CORS(access_control_bp)
 
 @access_control_bp.route('/blacklist', methods=['GET'])

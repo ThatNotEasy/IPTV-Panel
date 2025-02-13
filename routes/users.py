@@ -18,7 +18,7 @@ logging = setup_logging()
 
 ADMIN_PASS = config["ADMIN"]["PASSWORD"]
 
-users_bp = Blueprint('users_bp', __name__)
+users_bp = Blueprint('users_bp', __name__, template_folder="templates", static_folder="templates/static", static_url_path="/static")
 CORS(users_bp)
 
 

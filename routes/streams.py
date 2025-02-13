@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, render_template, url_for
 from flask_cors import cross_origin, CORS
 from flask_jwt_extended import jwt_required
 
-streams_bp = Blueprint('streams_bp', __name__)
+streams_bp = Blueprint('streams_bp', __name__, template_folder="templates", static_folder="templates/static", static_url_path="/static")
 CORS(streams_bp)
 
 # ============================================================================================================================================ #

@@ -23,7 +23,7 @@ SECRET_KEY = config['DEFAULT']['SECRET_KEY']
 TITLE = config['DEFAULT']["TITLE"]
 DESCRIPTION = config['DEFAULT']["DESCRIPTION"]
 
-app = Flask("+ IPTV PANEL + ", static_folder="../templates/swagger/static", static_url_path="/static")
+app = Flask("+ IPTV PANEL + ", template_folder="templates", static_folder="templates/static", static_url_path="/static")
 
 app.jinja_env.autoescape = True
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -82,12 +82,6 @@ app.register_blueprint(access_control_bp, url_prefix=f'{prefix_url_api}/access_c
 app.register_blueprint(reseller_bp, url_prefix=f'{prefix_url_api}/resellers')
 app.register_blueprint(authorized_bp, url_prefix=f'{prefix_url_api}/authorized')
 app.register_blueprint(streams_bp, url_prefix=f'{prefix_url_api}/streams')
-
-@app.route('/')
-@cross_origin()
-def index():
-    user_ip_data = log_user_ip(request)
-    return render_template('index.html')
 
 # ==================================================================================================================================================== #
 

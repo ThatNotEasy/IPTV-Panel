@@ -17,7 +17,7 @@ FULL_UUID = ''
 IP_STATUS = ''
 JSON_FILE = ''
 
-authorized_bp = Blueprint('authorized_bp', __name__)
+authorized_bp = Blueprint('authorized_bp',  __name__, template_folder="templates", static_folder="templates/static", static_url_path="/static")
 authorized = AUTHORIZED()
 CORS(authorized_bp)
 
